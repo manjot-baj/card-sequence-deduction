@@ -5,12 +5,19 @@
     <meta charset="UTF-8">
     <title>Card Sequence Deduction Game</title>
     <style>
+        /* ===== Base Styles ===== */
         body {
             font-family: "Segoe UI", Tahoma, sans-serif;
-            background: linear-gradient(135deg, #dce3f0, #f4f7fa);
             margin: 0;
             padding: 20px;
             color: #333;
+            background: linear-gradient(135deg, #dce3f0, #f4f7fa);
+            transition: background 0.5s, color 0.5s;
+        }
+
+        body.night {
+            background: linear-gradient(135deg, #1a1a1a, #333);
+            color: #eee;
         }
 
         h1 {
@@ -21,7 +28,6 @@
         p {
             text-align: center;
             margin-top: 5px;
-            color: #666;
         }
 
         .container {
@@ -38,6 +44,13 @@
             padding: 15px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: background 0.5s, color 0.5s;
+        }
+
+        body.night .game-area,
+        body.night .stats-area {
+            background: #222;
+            color: #eee;
         }
 
         .game-area {
@@ -51,6 +64,7 @@
             overflow-y: auto;
         }
 
+        /* ===== Deck & Cards ===== */
         .deck {
             display: grid;
             grid-template-columns: 40px repeat(4, 70px);
@@ -65,7 +79,6 @@
             justify-content: center;
             font-weight: bold;
             font-size: 16px;
-            color: #555;
         }
 
         .card {
@@ -82,7 +95,7 @@
             overflow: hidden;
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
             border: 2px solid black;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.5s, color 0.5s;
         }
 
         .card:hover {
@@ -110,6 +123,7 @@
             color: white;
         }
 
+        /* ===== Guess Slots ===== */
         .guess {
             display: flex;
             justify-content: center;
@@ -118,6 +132,22 @@
             gap: 8px;
         }
 
+        .card-slot {
+            width: 60px;
+            height: 90px;
+            border: 2px dashed #aaa;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.5s, color 0.5s;
+        }
+
+        body.night .card-slot {
+            border-color: #555;
+        }
+
+        /* ===== Buttons ===== */
         button {
             padding: 10px 18px;
             margin: 8px;
@@ -128,7 +158,7 @@
             cursor: pointer;
             background: #4d79ff;
             color: white;
-            transition: background 0.3s ease, transform 0.1s ease;
+            transition: background 0.3s, transform 0.1s, color 0.5s;
         }
 
         button:hover {
@@ -145,6 +175,16 @@
             background: #bbb;
         }
 
+        .theme-toggle {
+            background: #ff9800;
+            color: white;
+        }
+
+        .theme-toggle:hover {
+            background: #e68a00;
+        }
+
+        /* ===== Table ===== */
         table {
             border-collapse: collapse;
             width: 100%;
@@ -152,12 +192,7 @@
             table-layout: fixed;
         }
 
-        th {
-            background: #4d79ff;
-            color: white;
-            padding: 8px;
-        }
-
+        th,
         td {
             border: 1px solid #ddd;
             padding: 6px;
@@ -165,10 +200,35 @@
             word-wrap: break-word;
         }
 
+        th {
+            background: #4d79ff;
+            color: white;
+        }
+
         tr:nth-child(even) {
             background: #f9f9f9;
         }
 
+        body.night th {
+            background: #555;
+        }
+
+        body.night tr:nth-child(even) {
+            background: #333;
+        }
+
+        body.night td,
+        body.night th {
+            color: #eee;
+            border-color: #666;
+        }
+
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 40%;
+        }
+
+        /* ===== Status Messages ===== */
         #statusMsg {
             margin-top: 10px;
             font-size: 16px;
@@ -192,6 +252,7 @@
             color: #856404;
         }
 
+        /* ===== Animations ===== */
         @keyframes winFlash {
 
             0%,
@@ -200,7 +261,7 @@
             }
 
             50% {
-                background: #ffffff;
+                background: #fff;
             }
         }
 
@@ -212,7 +273,7 @@
             }
 
             50% {
-                background: #ffffff;
+                background: #fff;
             }
         }
 
@@ -224,25 +285,39 @@
             animation: loseFlash 0.5s ease-in-out 4;
         }
 
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            font-size: 14px;
-            table-layout: fixed;
-        }
+        /* ===== Mobile Responsive ===== */
+        @media (max-width: 600px) {
+            .container {
+                flex-direction: column;
+                gap: 10px;
+            }
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 6px;
-            text-align: center;
-            word-wrap: break-word;
-        }
+            .game-area,
+            .stats-area {
+                flex: none;
+                width: 100%;
+            }
 
-        th:nth-child(2),
-        td:nth-child(2) {
-            width: 40%;
-            /* Adjust until your sequence fits in one line */
+            .deck {
+                grid-template-columns: 30px repeat(4, 50px);
+                gap: 5px;
+            }
+
+            .card,
+            .card-slot {
+                width: 50px;
+                height: 75px;
+                font-size: 20px;
+            }
+
+            button {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+
+            table {
+                font-size: 12px;
+            }
         }
     </style>
 </head>
@@ -251,6 +326,9 @@
     <h1>Card Sequence Deduction Game</h1>
     <p>Guess the 5-card sequence in 20 tries!</p>
     <p>⏱ Time: <span id="timer">0:00</span></p>
+    <div style="text-align:center;">
+        <button class="theme-toggle" onclick="toggleTheme()">Toggle Day/Night Mode</button>
+    </div>
 
     <div class="container">
         <div class="game-area" id="gameArea">
@@ -279,46 +357,41 @@
         </div>
     </div>
 
+    <!-- Audio -->
     <audio id="soundWin" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3"></audio>
     <audio id="soundLose" src="https://assets.mixkit.co/sfx/preview/mixkit-losing-drums-2026.mp3"></audio>
     <audio id="soundCard" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
 
     <script>
+        /* ===== Theme Toggle ===== */
+        function toggleTheme() {
+            document.body.classList.toggle("night");
+        }
+
+        /* ===== Game Logic (same as before) ===== */
         const colors = ["Red", "Blue", "Yellow", "Green"];
         const numbers = [1, 2, 3, 4, 5];
         let deck = [], secretSequence = [], currentGuess = [];
         let guessCount = 0, gameOver = false, dragData = null;
         let timerInterval, startTime;
         const maxGuesses = 20;
-
         const soundWin = document.getElementById("soundWin");
         const soundLose = document.getElementById("soundLose");
         const soundCard = document.getElementById("soundCard");
 
-        function buildDeck() {
-            deck = [];
-            colors.forEach(c => numbers.forEach(n => deck.push({ number: n, color: c })));
-        }
-
+        function buildDeck() { deck = []; colors.forEach(c => numbers.forEach(n => deck.push({ number: n, color: c }))); }
         function renderDeck() {
-            const deckDiv = document.getElementById("deck");
-            deckDiv.innerHTML = "";
+            const deckDiv = document.getElementById("deck"); deckDiv.innerHTML = "";
             numbers.forEach(num => {
-                const labelDiv = document.createElement("div");
-                labelDiv.className = "deck-label";
-                labelDiv.textContent = num;
+                const labelDiv = document.createElement("div"); labelDiv.className = "deck-label"; labelDiv.textContent = num;
                 deckDiv.appendChild(labelDiv);
                 colors.forEach(color => {
                     const cardObj = deck.find(c => c.number === num && c.color === color);
                     const div = document.createElement("div");
                     if (cardObj) {
-                        div.className = `card ${color}`;
-                        div.textContent = num;
-                        div.draggable = true;
+                        div.className = `card ${color}`; div.textContent = num; div.draggable = true;
                         div.onclick = () => moveCardFromDeck(cardObj);
-                        div.ondragstart = e => {
-                            dragData = { type: "deck", card: cardObj };
-                        };
+                        div.ondragstart = e => { dragData = { type: "deck", card: cardObj }; }
                     }
                     deckDiv.appendChild(div);
                 });
@@ -326,171 +399,67 @@
         }
 
         function renderGuess() {
-            const guessDiv = document.getElementById("guess");
-            guessDiv.innerHTML = "";
+            const guessDiv = document.getElementById("guess"); guessDiv.innerHTML = "";
             for (let i = 0; i < 5; i++) {
-                const card = currentGuess[i];
-                const div = document.createElement("div");
-                div.className = "card-slot";
-                div.style.width = "60px";
-                div.style.height = "90px";
-                div.style.border = "2px dashed #aaa";
-                div.style.borderRadius = "12px";
-                div.style.display = "flex";
-                div.style.justifyContent = "center";
-                div.style.alignItems = "center";
-
+                const card = currentGuess[i]; const div = document.createElement("div"); div.className = "card-slot";
                 if (card) {
-                    div.className = `card ${card.color}`;
-                    div.textContent = card.number;
-                    div.draggable = true;
-                    div.ondragstart = () => { dragData = { type: "guess", index: i, card }; };
-                    div.onclick = () => returnCardToDeck(i);
+                    div.className = `card ${card.color}`; div.textContent = card.number; div.draggable = true;
+                    div.ondragstart = () => { dragData = { type: "guess", index: i, card }; }; div.onclick = () => returnCardToDeck(i);
                 }
-                div.ondragover = e => e.preventDefault();
-                div.ondrop = () => handleDrop(i);
+                div.ondragover = e => e.preventDefault(); div.ondrop = () => { handleDrop(i); dragData = null; }
                 guessDiv.appendChild(div);
             }
         }
 
         function moveCardFromDeck(card) {
-            if (gameOver) return;
-            const emptyIndex = currentGuess.findIndex(c => !c);
+            if (gameOver) return; const emptyIndex = currentGuess.findIndex(c => !c);
             if (emptyIndex !== -1) {
                 currentGuess[emptyIndex] = card;
                 deck = deck.filter(c => !(c.number === card.number && c.color === card.color));
-                soundCard.play();
-                renderDeck();
-                renderGuess();
+                soundCard.play(); renderDeck(); renderGuess();
             }
         }
 
         function returnCardToDeck(index) {
-            if (gameOver) return;
-            if (currentGuess[index]) {
-                deck.push(currentGuess[index]);
-                currentGuess[index] = null;
-                soundCard.play();
-                renderDeck();
-                renderGuess();
+            if (gameOver) return; if (currentGuess[index]) {
+                deck.push(currentGuess[index]); currentGuess[index] = null; soundCard.play(); renderDeck(); renderGuess();
             }
         }
 
         function handleDrop(slotIndex) {
             if (!dragData) return;
             if (dragData.type === "deck") {
-                if (currentGuess[slotIndex]) {
-                    deck.push(currentGuess[slotIndex]);
-                }
-                currentGuess[slotIndex] = dragData.card;
-                deck = deck.filter(c => !(c.number === dragData.card.number && c.color === dragData.card.color));
+                if (currentGuess[slotIndex]) deck.push(currentGuess[slotIndex]);
+                currentGuess[slotIndex] = dragData.card; deck = deck.filter(c => !(c.number === dragData.card.number && c.color === dragData.card.color));
             } else if (dragData.type === "guess") {
                 if (slotIndex === dragData.index) return;
-                if (currentGuess[slotIndex]) {
-                    currentGuess[dragData.index] = currentGuess[slotIndex];
-                } else {
-                    currentGuess[dragData.index] = null;
-                }
-                currentGuess[slotIndex] = dragData.card;
-            }
-            soundCard.play();
-            renderDeck();
-            renderGuess();
+                if (currentGuess[slotIndex]) currentGuess[dragData.index] = currentGuess[slotIndex];
+                else currentGuess[dragData.index] = null; currentGuess[slotIndex] = dragData.card;
+            } soundCard.play(); renderDeck(); renderGuess();
         }
 
-        function resetGuess() {
-            if (gameOver) return;
-            deck = [...deck, ...currentGuess.filter(Boolean)];
-            currentGuess = Array(5).fill(null);
-            renderDeck();
-            renderGuess();
-        }
-
-        function generateSecretSequence() {
-            secretSequence = [];
-            let availableCards = [...deck];
-            for (let i = 0; i < 5; i++) {
-                let idx = Math.floor(Math.random() * availableCards.length);
-                secretSequence.push(availableCards[idx]);
-                availableCards.splice(idx, 1);
-            }
-        }
-
-        function startTimer() {
-            startTime = Date.now();
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                let elapsed = Math.floor((Date.now() - startTime) / 1000);
-                let minutes = Math.floor(elapsed / 60);
-                let seconds = elapsed % 60;
-                document.getElementById("timer").textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            }, 1000);
-        }
-
-        function stopTimer() {
-            clearInterval(timerInterval);
-        }
+        function resetGuess() { if (gameOver) return; deck = [...deck, ...currentGuess.filter(Boolean)]; currentGuess = Array(5).fill(null); renderDeck(); renderGuess(); }
+        function generateSecretSequence() { secretSequence = []; let availableCards = [...deck]; for (let i = 0; i < 5; i++) { let idx = Math.floor(Math.random() * availableCards.length); secretSequence.push(availableCards[idx]); availableCards.splice(idx, 1); } }
+        function startTimer() { startTime = Date.now(); clearInterval(timerInterval); timerInterval = setInterval(() => { let elapsed = Math.floor((Date.now() - startTime) / 1000); let minutes = Math.floor(elapsed / 60); let seconds = elapsed % 60; document.getElementById("timer").textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`; }, 1000); }
+        function stopTimer() { clearInterval(timerInterval); }
 
         function submitGuess() {
-            if (gameOver) return;
-            if (currentGuess.some(c => !c)) {
-                setStatus("⚠️ Fill all 5 slots!", "warn");
-                return;
-            }
-            guessCount++;
-            let numMatches = 0, colorMatches = 0, exactMatches = 0;
+            if (gameOver) return; if (currentGuess.some(c => !c)) { setStatus("⚠️ Fill all 5 slots!", "warn"); return; }
+            guessCount++; let numMatches = 0, colorMatches = 0, exactMatches = 0;
             for (let i = 0; i < 5; i++) {
-                const isNum = currentGuess[i].number === secretSequence[i].number;
-                const isColor = currentGuess[i].color === secretSequence[i].color;
-                if (isNum && isColor) exactMatches++;
-                else if (isNum) numMatches++;
-                else if (isColor) colorMatches++;
+                const isNum = currentGuess[i].number === secretSequence[i].number; const isColor = currentGuess[i].color === secretSequence[i].color;
+                if (isNum && isColor) exactMatches++; else if (isNum) numMatches++; else if (isColor) colorMatches++;
             }
-            const row = document.createElement("tr");
-            row.innerHTML = `<td>${guessCount}</td>
-        <td>${currentGuess.map(c => c.number + c.color[0]).join(", ")}</td>
-        <td>${numMatches}</td>
-        <td>${colorMatches}</td>
-        <td>${exactMatches}</td>`;
+            const row = document.createElement("tr"); row.innerHTML = `<td>${guessCount}</td><td>${currentGuess.map(c => c.number + c.color[0]).join(", ")}</td><td>${numMatches}</td><td>${colorMatches}</td><td>${exactMatches}</td>`;
             document.getElementById("historyTable").appendChild(row);
-            if (exactMatches === 5) {
-                stopTimer();
-                let finalTime = document.getElementById("timer").textContent;
-                setStatus(`🎉 You win in ${guessCount} guesses! Time: ${finalTime}`, "win");
-                soundWin.play();
-                document.getElementById("gameArea").classList.add("win-anim");
-                gameOver = true;
-            } else if (guessCount >= maxGuesses) {
-                stopTimer();
-                setStatus(`💀 Game Over! Correct: ${secretSequence.map(c => c.number + c.color[0]).join(", ")}`, "lose");
-                soundLose.play();
-                document.getElementById("gameArea").classList.add("lose-anim");
-                gameOver = true;
-            } else {
-                setStatus(`Guess ${guessCount} recorded. Keep going!`, "warn");
-            }
+            if (exactMatches === 5) { stopTimer(); let finalTime = document.getElementById("timer").textContent; setStatus(`🎉 You win in ${guessCount} guesses! Time: ${finalTime}`, "win"); soundWin.play(); document.getElementById("gameArea").classList.add("win-anim"); gameOver = true; }
+            else if (guessCount >= maxGuesses) { stopTimer(); setStatus(`💀 Game Over! Correct: ${secretSequence.map(c => c.number + c.color[0]).join(", ")}`, "lose"); soundLose.play(); document.getElementById("gameArea").classList.add("lose-anim"); gameOver = true; }
+            else { setStatus(`Guess ${guessCount} recorded. Keep going!`, "warn"); }
         }
 
-        function setStatus(msg, type) {
-            const el = document.getElementById("statusMsg");
-            el.textContent = msg;
-            el.className = type;
-        }
+        function setStatus(msg, type) { const el = document.getElementById("statusMsg"); el.textContent = msg; el.className = type; }
+        function restartGame() { buildDeck(); currentGuess = Array(5).fill(null); renderDeck(); renderGuess(); generateSecretSequence(); guessCount = 0; gameOver = false; setStatus("Make your guess!", "warn"); document.getElementById("historyTable").innerHTML = ""; startTimer(); }
 
-        function restartGame() {
-            buildDeck();
-            currentGuess = Array(5).fill(null);
-            renderDeck();
-            renderGuess();
-            generateSecretSequence();
-            guessCount = 0;
-            gameOver = false;
-            setStatus("Make your guess!", "warn");
-            document.getElementById("historyTable").innerHTML = "";
-            startTimer();
-        }
-
-        // Start game
         restartGame();
     </script>
 </body>
