@@ -223,6 +223,27 @@
         .lose-anim {
             animation: loseFlash 0.5s ease-in-out 4;
         }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 14px;
+            table-layout: fixed;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: center;
+            word-wrap: break-word;
+        }
+
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 40%;
+            /* Adjust until your sequence fits in one line */
+        }
     </style>
 </head>
 
@@ -246,9 +267,9 @@
             <table>
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>G.No</th>
                         <th>Seq</th>
-                        <th>Number</th>
+                        <th>#</th>
                         <th>Color</th>
                         <th>Exact</th>
                     </tr>
